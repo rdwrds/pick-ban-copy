@@ -1,0 +1,21 @@
+.sidebar-container {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  width: 400px;
+  height: 100%;
+}
+
+.sidebar-content {
+  /*this might be confusin later since margin/padding
+DOES affect distance*/
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  /* padding: 24px; */
+  /* outline: solid 1px red; */
+}

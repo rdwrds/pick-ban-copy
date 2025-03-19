@@ -1,0 +1,62 @@
+.minimap {
+  position: absolute;
+  bottom: 0;
+  height: 360px;
+  width: 360px;
+  background-color: blue;
+  object-fit: cover;
+}
+
+.minimap-image {
+  height: 100%;
+  width: 100%;
+}
+
+.icon-container {
+  position: absolute;
+  top: 0;
+  left: -32px;
+  width: 32px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.minion-icon-container {
+  position: absolute;
+  /* outline: solid 1px red; */
+  top: -32px;
+  height: 32px;
+  width: 100%;
+}
+
+.minion-icons {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+}
+
+.ward-icons {
+  display: inline-block;
+}
+
+.minimap-icons {
+  position: relative;
+  height: 180px;
+  margin: 12px 0px;
+}
+
+.minimap-champ-icon {
+  height: clamp(16px, 32px, 64px);
+  width: clamp(16px, 32px, 64px);
+  margin: 0px;
+  background-size: cover;
+}
+
+.minimap-trinket-icon {
+  height: clamp(16px, 32px, 64px);
+  width: clamp(16px, 32px, 64px);
+  margin: 0px 4px;
+  background-size: cover;
+}
