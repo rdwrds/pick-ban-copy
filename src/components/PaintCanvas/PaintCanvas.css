@@ -1,0 +1,23 @@
+.canvas-wrapper {
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  top: 0;
+  left: 0;
+  outline: solid 1px red;
+  background-size: cover;
+}
+
+.btn {
+  position: absolute;
+  top: 0;
+  left: 0px;
+  z-index: 1;
+}
+
+.btn-draw {
+  position: absolute;
+  top: 0;
+  left: 50px;
+  z-index: 1;
+}

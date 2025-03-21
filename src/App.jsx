@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import "./App.css";
-import { Champ, Minimap, Sidebar } from "./components";
+import { Champ, Minimap, Sidebar, PaintCanvas } from "./components";
 import PickProvider, { PickContext } from "./components/PickProvider.jsx";
 
 function App() {

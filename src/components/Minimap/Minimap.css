@@ -7,11 +7,6 @@
   object-fit: cover;
 }
 
-.minimap-image {
-  height: 100%;
-  width: 100%;
-}
-
 .icon-container {
   position: absolute;
   top: 0;

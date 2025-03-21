@@ -2,6 +2,7 @@ import { useContext } from "react";
 import "./Minimap.css";
 import { PickContext } from "../PickProvider";
 import WEIRD_CHAMP_NAMES from "../../data/minimap_champ_icons";
+import PaintCanvas from "../PaintCanvas/PaintCanvas";
 
 const Minimap = () => {
   const CHAMP_MINIMAP_DATA_API =
@@ -48,7 +49,7 @@ const Minimap = () => {
 
   return (
     <div className="minimap">
-      <img className="minimap-image" src={IN_GAME_MINIMAP} />
+      <PaintCanvas />
       <div className="minion-icon-container">
         <div className="minion-icons">
           <img className="minimap-trinket-icon" src={BLUE_MINION_ICON} />
