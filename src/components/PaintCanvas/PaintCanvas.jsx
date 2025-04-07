@@ -82,15 +82,15 @@ const PaintCanvas = () => {
       //THE DOTS WERE PLACED AND ALIGNED TO
       //the fog width does not matter in comparison.
       const scaleX = x * (canvas.width / 533) - 20;
-      const scaleY = y * (canvas.height / 535) - 25;
+      const scaleY = y * (canvas.height / 535) - 20;
 
       const tower = new window.fabric.Image.fromURL(image, (img) => {
         img.originX = "center";
         img.originY = "center";
         img.left = scaleX;
         img.top = scaleY;
-        img.scaleToWidth(canvas.width / 12);
-        img.scaleToHeight(canvas.height / 12);
+        img.scaleToWidth(canvas.width / 15);
+        img.scaleToHeight(canvas.height / 15);
         img.fill = "red";
         canvas.add(img);
       });
