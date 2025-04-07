@@ -3,7 +3,6 @@
   bottom: 0;
   height: 360px;
   width: 360px;
-  background-color: blue;
   object-fit: cover;
 }
 
@@ -21,7 +20,7 @@
 .minion-icon-container {
   position: absolute;
   /* outline: solid 1px red; */
-  top: -32px;
+  top: -48px;
   height: 32px;
   width: 100%;
 }

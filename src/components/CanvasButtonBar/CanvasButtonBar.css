@@ -1,0 +1,11 @@
+.button-bar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  gap: 4px;
+  z-index: 1;
+}
+
+.btn-draw {
+}
