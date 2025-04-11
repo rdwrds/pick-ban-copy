@@ -3,9 +3,21 @@ import "./PaintCanvas.css";
 import fog_of_war from "../../assets/base_sr_fog.png";
 import blue_turret from "../../assets/blue_turret.png";
 import red_turret from "../../assets/red_turret.png";
+import blue_nexus from "../../assets/blue_nexus.png";
+import red_nexus from "../../assets/red_nexus.png";
+import red_inhib from "../../assets/red_inhib.png";
+import blue_inhib from "../../assets/blue_inhib.png";
 import { PickContext } from "../PickProvider";
-import { STRUCTURES, CAMPS, BUFFS } from "../../data/locations.js";
+import {
+  STRUCTURES,
+  CAMPS,
+  BUFFS,
+  BARON_PIT,
+  DRAGON_PIT,
+  BASE_VISION,
+} from "../../data/locations.js";
 import { CanvasButtonBar, ImgBar, ChampBar } from "../../components";
+
 const PaintCanvas = () => {
   const IN_GAME_MINIMAP =
     "https://raw.communitydragon.org/latest/game/assets/maps/info/map11/2dlevelminimap_base_baron1.png";
@@ -89,6 +101,11 @@ const PaintCanvas = () => {
         img.originY = "center";
         img.left = scaleX;
         img.top = scaleY;
+        //controls are used to scale/rotate images
+        //so still need to lock X/Y regardless
+        img.hasControls = false;
+        img.lockMovementX = true;
+        img.lockMovementY = true;
         img.scaleToWidth(canvas.width / 15);
         img.scaleToHeight(canvas.height / 15);
         img.fill = "red";
@@ -108,33 +125,59 @@ const PaintCanvas = () => {
       erasable: false,
     });
 
+    const nexusPositions = [
+      { x: 532, y: 1 },
+      { x: 1, y: 532 },
+    ];
+
     const clipPaths = obj_array.map((struct) => {
       const { x, y } = struct;
 
       //the hardcoded offset has no effect on the positions
-      const scaleX = x * (canvas.width / 533);
-      const scaleY = y * (canvas.height / 535);
+      let scaleX = x * (canvas.width / 533);
+      let scaleY = y * (canvas.height / 535);
+      let rad = 28.8;
+
+      const isNexusCoords = nexusPositions.some(
+        (pos) => pos.x == x && pos.y == y
+      );
+
+      if (isNexusCoords) {
+        scaleX -= 60;
+        scaleY -= 60;
+        rad = 120;
+      }
+
+      console.log(scaleX);
+      console.log(scaleY);
+      console.log(rad);
 
       const circ = new window.fabric.Circle({
         originX: "left",
         originY: "top",
         top: scaleY,
         left: scaleX,
-        radius: 28,
+        radius: rad,
         inverted: true,
         absolutePositioned: true,
       });
 
+      if (isNexusCoords) canvas.add(circ);
+
       return circ;
     });
 
-    //offset the clip group to make it look good...
-    //lost a week to this..
     const clipGroup = new window.fabric.Group(clipPaths, {
-      top: -10,
-      left: -5,
+      top: 120 / 10,
+      left: 120 / 10,
       inverted: true,
       absolutePositioned: true,
+      //the reason the clips kept moving is
+      //bc the height and width were calculated
+      //each time.
+      //now we force it to the canvas size
+      height: canvas.height,
+      width: canvas.width,
       originX: "left",
       originY: "top",
     });
@@ -153,9 +196,20 @@ const PaintCanvas = () => {
     addIconsToCanvas(STRUCTURES.BLUE_SIDE, blue_turret, canvas);
     addIconsToCanvas(STRUCTURES.RED_SIDE, red_turret, canvas);
 
+    addIconsToCanvas(STRUCTURES.BLUE_SIDE_NEXUS, blue_nexus, canvas);
+    addIconsToCanvas(STRUCTURES.RED_SIDE_NEXUS, red_nexus, canvas);
+
+    addIconsToCanvas(STRUCTURES.BLUE_SIDE_INHIBITORS, blue_inhib, canvas);
+    addIconsToCanvas(STRUCTURES.RED_SIDE_INHIBITORS, red_inhib, canvas);
+
     //4-7-25 - until we implement a way to continuously add clippaths,
     //we gotta combine the arrays and do the clips at once
-    const combinedArrays = STRUCTURES.RED_SIDE.concat(STRUCTURES.BLUE_SIDE);
+    const combinedArrays = STRUCTURES.RED_SIDE.concat(
+      STRUCTURES.BLUE_SIDE,
+      BASE_VISION
+    );
+    console.log(combinedArrays);
+
     addClipsToCanvas(combinedArrays, canvas);
   };
 
@@ -164,8 +218,17 @@ const PaintCanvas = () => {
       "https://raw.communitydragon.org/latest/game/assets/ux/minimap/icons/red.png";
     const CAMP =
       "https://raw.communitydragon.org/latest/game/assets/ux/minimap/icons/smallcamp.png";
+
+    const BARON =
+      "https://raw.communitydragon.org/latest/game/assets/ux/minimap/icons/baron.png";
+    const DRAGON =
+      "https://raw.communitydragon.org/latest/game/assets/ux/minimap/icons/dragon_ocean.png";
+
     addIconsToCanvas(CAMPS, CAMP, canvas);
     addIconsToCanvas(BUFFS, BUFF, canvas);
+
+    addIconsToCanvas(BARON_PIT, BARON, canvas);
+    addIconsToCanvas(DRAGON_PIT, DRAGON, canvas);
   };
 
   const handleClick = (e, ASSET_URL) => {
@@ -187,8 +250,6 @@ const PaintCanvas = () => {
 
       canvas.setActiveObject(img);
     });
-
-    //initFogOfWar(canvas);
   };
 
   return (
