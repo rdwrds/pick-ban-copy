@@ -5,3 +5,4 @@ export { default as PaintCanvas } from "./PaintCanvas/PaintCanvas.jsx";
 export { default as CanvasButtonBar } from "./CanvasButtonBar/CanvasButtonBar.jsx";
 export { default as ImgBar } from "./ImgBar/ImgBar.jsx";
 export { default as ChampBar } from "./ChampBar/ChampBar.jsx";
+export { default as CanvasDialog } from "./CanvasDialog/CanvasDialog.jsx";

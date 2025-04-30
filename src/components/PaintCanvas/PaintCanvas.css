@@ -1,7 +1,5 @@
-.canvas-wrapper {
+.minimap .canvas-wrapper {
   position: absolute;
-  width: 360px;
-  height: 360px;
   top: 0;
   left: 0;
   outline: solid 1px red;
