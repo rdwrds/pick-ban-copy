@@ -4,6 +4,7 @@ import { PickContext } from "../PickProvider";
 import WEIRD_CHAMP_NAMES from "../../data/minimap_champ_icons";
 import PaintCanvas from "../PaintCanvas/PaintCanvas";
 
+//this component is redundant
 const Minimap = () => {
   const CHAMP_MINIMAP_DATA_API =
     "https://raw.communitydragon.org/latest/game/assets/characters/CHAMP/hud/CHAMP_circle.png";
@@ -15,13 +16,13 @@ const Minimap = () => {
   const RED_MINION_ICON =
     "https://raw.communitydragon.org/latest/game/assets/characters/ha_chaosminionmelee/hud/redmelee_circle.png";
 
-  //we wont need dispatch
-  const { state, _ } = useContext(PickContext);
-
   return (
-    <div className="minimap">
-      <PaintCanvas />
-    </div>
+    <PaintCanvas
+      id={"canvas"}
+      canvasHeight={360}
+      canvasWidth={360}
+      dialog={false}
+    />
   );
 };
 export default Minimap;

@@ -1,10 +1,28 @@
 import "./CanvasButtonBar.css";
 
 const CanvasButtonBar = ({ canvas }) => {
+  const handleWidthChange = (e) => {
+    console.log(e.target.value);
+    console.log(canvas.freeDrawingBrush);
+    canvas.freeDrawingBrush.width = e.target.value;
+  };
+
   return (
     <div className="button-bar">
+      <label className="pen-width-label" for="pen-width">
+        Pen Size
+      </label>
+      <input
+        type="range"
+        className="pen-width"
+        min="0"
+        max={"10"}
+        onChange={handleWidthChange}
+      />
+
+      <input type="color" className="pen-color" />
       <button
-        className="btn-draw"
+        className="map-btn"
         onClick={() => {
           canvas.isDrawingMode = !canvas.isDrawingMode;
         }}
@@ -12,7 +30,7 @@ const CanvasButtonBar = ({ canvas }) => {
         draw
       </button>
       <button
-        className="btn-draw"
+        className="map-btn"
         onClick={() => {
           const eraser = new window.fabric.EraserBrush(canvas);
           eraser.width = 10;
@@ -31,7 +49,7 @@ const CanvasButtonBar = ({ canvas }) => {
       </button>
 
       <button
-        className="btn-draw"
+        className="map-btn"
         onClick={() => {
           const toRemove = canvas.getActiveObject();
           if (toRemove) {

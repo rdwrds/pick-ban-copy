@@ -19,5 +19,6 @@ DOES affect distance*/
   height: 100%;
   width: 100%;
   /* padding: 24px; */
-  /* outline: solid 1px red; */
+  outline: solid 1px red;
+  background-color: purple;
 }

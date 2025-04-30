@@ -7,5 +7,20 @@
   z-index: 1;
 }
 
-.btn-draw {
+.pen-width-label {
+  margin: auto;
+  font-size: 8px;
+  color: white;
+  outline: solid 1px red;
+}
+
+.pen-width {
+  width: 100px;
+}
+
+.map-btn {
+  background-color: grey;
+  border-radius: 5px;
+  box-shadow: none;
+  color: #ccc;
 }
