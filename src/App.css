@@ -52,3 +52,12 @@
   border-radius: 5px;
   scrollbar-color: #bbbbbb #242424;
 }
+
+.canvas-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 800px;
+  height: 800px;
+  padding: 0;
+}

@@ -1,6 +1,12 @@
 import { useContext, useEffect, useState } from "react";
 import "./App.css";
-import { Champ, Minimap, Sidebar, PaintCanvas } from "./components";
+import {
+  Champ,
+  Minimap,
+  Sidebar,
+  PaintCanvas,
+  CanvasDialog,
+} from "./components";
 import PickProvider, { PickContext } from "./components/PickProvider.jsx";
 
 function App() {
@@ -12,6 +18,7 @@ function App() {
   //to prep and hold champ data
   const [data, setData] = useState(null);
   const [champs, setChamps] = useState(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const fetchData = async () => {
     const resp = await fetch(CHAMP_DATA_API);
@@ -70,6 +77,13 @@ function App() {
 
   return (
     <main className="app">
+      <button
+        type="button"
+        onClick={() => {
+          setDialogOpen(!dialogOpen);
+        }}
+      ></button>
+      {dialogOpen && <CanvasDialog dialogOpen={dialogOpen} />}
       <Team team={"blue"} />
       <section className="champ-select">
         {champs
@@ -88,7 +102,16 @@ function App() {
       </section>
       <Team team={"red"} />
       <Sidebar>
-        <Minimap />
+        {!dialogOpen && (
+          <div className="minimap">
+            <PaintCanvas
+              id={"canvas"}
+              canvasHeight={360}
+              canvasWidth={360}
+              dialog={false}
+            />
+          </div>
+        )}
       </Sidebar>
     </main>
   );
