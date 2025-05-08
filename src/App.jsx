@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState, useRef } from "react";
 import "./App.css";
 import {
   Champ,
@@ -9,6 +9,8 @@ import {
 } from "./components";
 import PickProvider, { PickContext } from "./components/PickProvider.jsx";
 
+export const CanvasContext = createContext(null);
+
 function App() {
   const CHAMP_DATA_API =
     "https://ddragon.leagueoflegends.com/cdn/15.5.1/data/en_US/champion.json";
@@ -16,9 +18,12 @@ function App() {
   const { state, dispatch } = useContext(PickContext);
 
   //to prep and hold champ data
+  const [canvas, setCanvas] = useState(null);
   const [data, setData] = useState(null);
   const [champs, setChamps] = useState(null);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [toLoad, setToLoad] = useState(null);
+  const canvasRef = useRef(null);
 
   const fetchData = async () => {
     const resp = await fetch(CHAMP_DATA_API);
@@ -76,44 +81,72 @@ function App() {
   };
 
   return (
-    <main className="app">
-      <button
-        type="button"
-        onClick={() => {
-          setDialogOpen(!dialogOpen);
-        }}
-      ></button>
-      {dialogOpen && <CanvasDialog dialogOpen={dialogOpen} />}
-      <Team team={"blue"} />
-      <section className="champ-select">
-        {champs
-          ? Object.keys(champs).map((champ) => {
-              const picked =
-                state.blueChamps.includes(champ) ||
-                state.redChamps.includes(champ);
-              const dimStyle = picked ? { opacity: "0.2" } : { opacity: "1" };
-              return (
-                <>
-                  <Champ champ={champ} id={champs[champ]} dimStyle={dimStyle} />
-                </>
-              );
-            })
-          : "loading..."}
-      </section>
-      <Team team={"red"} />
-      <Sidebar>
-        {!dialogOpen && (
-          <div className="minimap">
-            <PaintCanvas
-              id={"canvas"}
-              canvasHeight={360}
-              canvasWidth={360}
-              dialog={false}
-            />
-          </div>
+    <CanvasContext.Provider value={{ canvas, setCanvas }}>
+      <main className="app">
+        <button
+          type="button"
+          onClick={() => {
+            setToLoad(
+              canvas.toJSON([
+                "selectable",
+                "hasControls",
+                "lockMovementX",
+                "lockMovementY",
+                "lockRotation",
+                "lockScalingX",
+                "lockScalingY",
+              ])
+            );
+
+            console.log(canvasRef.current);
+
+            setDialogOpen(!dialogOpen);
+          }}
+        ></button>
+        {dialogOpen && (
+          <CanvasDialog
+            dialogOpen={dialogOpen}
+            setDialogOpen={setDialogOpen}
+            //a weeee bit of prop drilling :3
+            canvasToLoad={toLoad}
+          />
         )}
-      </Sidebar>
-    </main>
+        <Team team={"blue"} />
+        <section className="champ-select">
+          {champs
+            ? Object.keys(champs).map((champ) => {
+                const picked =
+                  state.blueChamps.includes(champ) ||
+                  state.redChamps.includes(champ);
+                const dimStyle = picked ? { opacity: "0.2" } : { opacity: "1" };
+                return (
+                  <>
+                    <Champ
+                      champ={champ}
+                      id={champs[champ]}
+                      dimStyle={dimStyle}
+                    />
+                  </>
+                );
+              })
+            : "loading..."}
+        </section>
+        <Team team={"red"} />
+        <Sidebar>
+          {!dialogOpen && (
+            <div className="minimap">
+              <PaintCanvas
+                id={"canvas"}
+                canvasHeight={360}
+                canvasWidth={360}
+                dialog={false}
+                ref={canvasRef}
+              />
+            </div>
+          )}
+        </Sidebar>
+      </main>
+    </CanvasContext.Provider>
   );
 }
 

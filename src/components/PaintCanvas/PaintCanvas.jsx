@@ -8,6 +8,7 @@ import red_nexus from "../../assets/red_nexus.png";
 import red_inhib from "../../assets/red_inhib.png";
 import blue_inhib from "../../assets/blue_inhib.png";
 import { PickContext } from "../PickProvider";
+import { CanvasContext } from "../../App.jsx";
 import {
   STRUCTURES,
   CAMPS,
@@ -18,7 +19,13 @@ import {
 } from "../../data/locations.js";
 import { CanvasButtonBar, ImgBar, ChampBar } from "../../components";
 
-const PaintCanvas = ({ id, canvasHeight, canvasWidth, dialog }) => {
+const PaintCanvas = ({
+  id,
+  canvasHeight,
+  canvasWidth,
+  dialog,
+  canvasToLoad,
+}) => {
   const IN_GAME_MINIMAP =
     "https://raw.communitydragon.org/latest/game/assets/maps/info/map11/2dlevelminimap_base_baron1.png";
   const NEUTRAL_TOWER =
@@ -29,11 +36,13 @@ const PaintCanvas = ({ id, canvasHeight, canvasWidth, dialog }) => {
 
   const { state, _ } = useContext(PickContext);
 
-  const [canvas, setCanvas] = useState(null);
+  const { canvas, setCanvas } = useContext(CanvasContext);
   const [fabricLoaded, setFabricLoaded] = useState(false);
   const [fogState, setFogState] = useState(null);
   const [clipGroupState, setClipGroupState] = useState(null);
+  const [mapsLoaded, setMapsLoaded] = useState(false);
 
+  //load fabric
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "/pick-ban-copy/fabric.js"; // Adjust path as needed
@@ -51,20 +60,15 @@ const PaintCanvas = ({ id, canvasHeight, canvasWidth, dialog }) => {
     };
   }, []);
 
-  useEffect(() => {
-    if (!fabricLoaded) return;
-
-    initFogOfWar(canvas);
-    initJungleCamps(canvas);
-  }, [canvas]);
-
+  //load the default canvas
   useEffect(() => {
     if (!fabricLoaded) return; // Wait for fabric to be loaded
 
-    console.log(imageRef.current);
     const image = window.fabric.Image.fromURL(IN_GAME_MINIMAP, (img) => {
       img.scaleToWidth(canvas.width);
       img.scaleToHeight(canvas.height);
+      img.name = "minimap";
+
       canvas.setBackgroundImage(img);
       img.selectable = false;
       img.erasable = false;
@@ -87,6 +91,74 @@ const PaintCanvas = ({ id, canvasHeight, canvasWidth, dialog }) => {
 
     setCanvas(canvas);
   }, [fabricLoaded]);
+
+  //initialize assets
+  useEffect(() => {
+    if (!fabricLoaded) return;
+
+    if (canvasToLoad) {
+      setMapsLoaded(true);
+    } else {
+      initFogOfWar(canvas);
+      initJungleCamps(canvas);
+      setMapsLoaded(true);
+    }
+  }, [canvas]);
+
+  //load custom canvas
+  useEffect(() => {
+    console.log("maps loaded!");
+
+    console.log("canvas save?: " + (canvasToLoad ? "yes" : "no"));
+
+    if (canvasToLoad) {
+      const maps = [
+        "minimap",
+        "http://localhost:5173/pick-ban-copy/src/assets/base_sr_fog.png",
+      ];
+
+      canvas.loadFromJSON(
+        canvasToLoad,
+        () => {
+          //for some reason, setting the H/W and then scaling it doenst make it work well
+          // canvas.backgroundImage.height = canvasHeight;
+          // canvas.backgroundImage.width = canvasHeight;
+
+          canvas.backgroundImage.scaleToHeight(canvasHeight);
+          canvas.backgroundImage.scaleToWidth(canvasWidth);
+          canvas.renderAll();
+        },
+        (jsonObj, canvasObj) => {
+          canvasObj.scaleToHeight(canvas.height / 19);
+          canvasObj.scaleToWidth(canvas.width / 19);
+
+          const x = canvasObj.left;
+          const y = canvasObj.top;
+
+          canvasObj.left = x * (canvasHeight / 360);
+          canvasObj.top = y * (canvasHeight / 360);
+
+          if (
+            canvasObj.src ===
+            "http://localhost:5173/pick-ban-copy/src/assets/base_sr_fog.png"
+          ) {
+            setFogState(canvasObj);
+            setClipGroupState(canvasObj.clipPath);
+            canvasObj.scaleToHeight(canvas.height);
+            canvasObj.scaleToWidth(canvas.width);
+
+            // canvasObj.clipGroup.scaleToHeight(800);
+            // canvasObj.clipGroup.scaleToWidth(800);
+            canvasObj.clipPath.scaleToHeight(800);
+            canvasObj.clipPath.scaleToWidth(800);
+          }
+        }
+      );
+
+      //setCanvas(canvas);
+      //canvas.renderAll();
+    }
+  }, [mapsLoaded]);
 
   const addIconsToCanvas = (obj_array, image, canvas) => {
     obj_array.map((struct) => {
@@ -121,6 +193,7 @@ const PaintCanvas = ({ id, canvasHeight, canvasWidth, dialog }) => {
     const fog_img = new window.fabric.Image(fogRef.current, {
       scaleX: canvas.width / fogRef.current.width,
       scaleY: canvas.height / fogRef.current.height,
+      name: "fog_image",
       selectable: false,
       erasable: false,
     });
@@ -159,7 +232,7 @@ const PaintCanvas = ({ id, canvasHeight, canvasWidth, dialog }) => {
       width: canvasWidth,
       originX: "left",
       originY: "top",
-      selectable: true,
+      selectable: false,
     });
 
     //copy these values to state so other objects can
@@ -170,22 +243,17 @@ const PaintCanvas = ({ id, canvasHeight, canvasWidth, dialog }) => {
     } else {
       console.log("fog not loaded");
       setFogState(fog_img);
+
       setClipGroupState(clipGroup);
     }
 
     fog_img.clipPath = clipGroup;
 
-    clipGroup.on("moving", () => {
-      console.log(clipGroup.top, " ", clipGroup.left);
-      console.log(clipGroup.aCoords);
-    });
-
     canvas.add(fog_img);
-
-    console.log(fog_img);
 
     canvas.renderAll();
     canvas.bringToFront(fog_img);
+    setClipGroupState(clipGroup);
   };
 
   const initFogOfWar = (canvas) => {
@@ -204,7 +272,6 @@ const PaintCanvas = ({ id, canvasHeight, canvasWidth, dialog }) => {
       STRUCTURES.BLUE_SIDE
       //BASE_VISION
     );
-    console.log(combinedArrays);
 
     addClipsToCanvas(combinedArrays, canvas);
   };
@@ -306,14 +373,16 @@ const PaintCanvas = ({ id, canvasHeight, canvasWidth, dialog }) => {
   } else {
     return (
       <div className="canvas-wrapper">
-        <ImgBar handleClick={handleClick} />
-        {/*all the champs and their icons load,
+        <div className="map-controls">
+          <ImgBar handleClick={handleClick} />
+          {/*all the champs and their icons load,
       but when giving them vision, the circClip
       duplicates on error
       - find a way to handle the names w/o error
       so that the clips dont duplicate*/}
-        <ChampBar handleClick={handleClick} />
-        <CanvasButtonBar canvas={canvas} />
+          <ChampBar handleClick={handleClick} />
+          <CanvasButtonBar canvas={canvas} />
+        </div>
         <canvas id={id} className="paint-canvas" ref={canvasRef}>
           <img id="fog" src={fog_of_war} ref={fogRef} />
           <img id="imag" src={IN_GAME_MINIMAP} ref={imageRef} />
