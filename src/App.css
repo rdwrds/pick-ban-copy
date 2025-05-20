@@ -3,7 +3,7 @@
   justify-content: space-between;
   max-width: 800px;
   max-height: 90vh;
-  margin: 7.5% auto;
+  margin: 5% auto;
 }
 
 .title-container {
@@ -12,7 +12,8 @@
   text-align: center;
   margin: 0;
   padding: 0;
-  margin: 64px 16px;
+  margin: 32px 16px;
+  margin-bottom: 0px;
 }
 
 .site-title {
