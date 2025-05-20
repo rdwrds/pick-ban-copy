@@ -26,6 +26,10 @@ const PaintCanvas = ({
   dialog,
   canvasToLoad,
 }) => {
+  console.log(canvasToLoad);
+
+  const clipGroupRef = useRef(null);
+
   const IN_GAME_MINIMAP =
     "https://raw.communitydragon.org/latest/game/assets/maps/info/map11/2dlevelminimap_base_baron1.png";
   const NEUTRAL_TOWER =
@@ -50,13 +54,13 @@ const PaintCanvas = ({
 
     script.onload = () => {
       console.log("Fabric.js loaded");
-      setFabricLoaded(true); // Set fabricLoaded to true once Fabric is loaded
+      setFabricLoaded(true);
     };
 
     document.body.appendChild(script);
 
     return () => {
-      document.body.removeChild(script); // Clean up script when component is unmounted
+      document.body.removeChild(script);
     };
   }, []);
 
@@ -88,6 +92,9 @@ const PaintCanvas = ({
     brush.shadow = new window.fabric.Shadow("rgb(255,255,255) 0px 0px 2px");
 
     canvas.freeDrawingBrush = brush;
+
+    console.log("THISCANVASSS");
+    console.log(canvas);
 
     setCanvas(canvas);
   }, [fabricLoaded]);
@@ -123,10 +130,14 @@ const PaintCanvas = ({
           //for some reason, setting the H/W and then scaling it doenst make it work well
           // canvas.backgroundImage.height = canvasHeight;
           // canvas.backgroundImage.width = canvasHeight;
+          //canvasToLoad = canvasToLoad;
 
           canvas.backgroundImage.scaleToHeight(canvasHeight);
           canvas.backgroundImage.scaleToWidth(canvasWidth);
           canvas.renderAll();
+
+          // canvas.height = canvasToLoad.height;
+          // canvas.width = canvasToLoad.width;
         },
         (jsonObj, canvasObj) => {
           canvasObj.scaleToHeight(canvas.height / 19);
@@ -142,8 +153,9 @@ const PaintCanvas = ({
             canvasObj.src ===
             "http://localhost:5173/pick-ban-copy/src/assets/base_sr_fog.png"
           ) {
-            setFogState(canvasObj);
-            setClipGroupState(canvasObj.clipPath);
+            console.log("RAHHH");
+            console.log(canvasObj.clipPath);
+
             canvasObj.scaleToHeight(canvas.height);
             canvasObj.scaleToWidth(canvas.width);
 
@@ -151,11 +163,15 @@ const PaintCanvas = ({
             // canvasObj.clipGroup.scaleToWidth(800);
             canvasObj.clipPath.scaleToHeight(800);
             canvasObj.clipPath.scaleToWidth(800);
+            console.log(fogRef);
+
+            setFogState(canvasObj);
+            setClipGroupState(canvasObj.clipPath);
+            setCanvas(canvas);
           }
         }
       );
 
-      //setCanvas(canvas);
       //canvas.renderAll();
     }
   }, [mapsLoaded]);
@@ -248,6 +264,8 @@ const PaintCanvas = ({
     }
 
     fog_img.clipPath = clipGroup;
+    console.log(fog_img.clipPath);
+    console.log(clipGroup);
 
     canvas.add(fog_img);
 
@@ -294,6 +312,8 @@ const PaintCanvas = ({
     addIconsToCanvas(DRAGON_PIT, DRAGON, canvas);
   };
 
+  //canvasToLoad isnt valid here for some reason
+
   const handleClick = (e, ASSET_URL) => {
     const image = window.fabric.Image.fromURL(ASSET_URL, (img) => {
       img.originX = "center";
@@ -321,39 +341,83 @@ const PaintCanvas = ({
         absolutePositioned: true,
       });
 
+      console.log(canvasToLoad);
+
       //i chatgpt'd this function,
       //simply setting the clips top/left to the images t/l
       //-doesnt work b/c groups share unique coordinates
       //-compared to the canvas
-      img.on("moving", () => {
+      img.on("moving", (e) => {
+        img.set({ left: e.pointer.x, top: e.pointer.y });
+        img.setCoords();
+
+        //img is not persisting when we swap the save
+        // console.log(img);
+
         const center = img.getCenterPoint();
+
         const invMatrix = window.fabric.util.invertTransform(
           clipGroupState.calcTransformMatrix()
         );
+        console.log("clipGroupState: " + clipGroupState);
+
+        // console.log(invMatrix);
         const localCenter = window.fabric.util.transformPoint(
           center,
           invMatrix
         );
-        circClip.set({ left: localCenter.x, top: localCenter.y });
-        circClip.setCoords();
+
+        let toMove =
+          clipGroupState._objects[clipGroupState._objects.indexOf(circClip)] ||
+          circClip;
+        // console.log(fogRef);
+
+        // console.log(canvas);
+        // console.log(clipGroupState._objects.indexOf(circClip));
+        //  console.log(
+        //   clipGroupState._objects[clipGroupState._objects.indexOf(circClip)]
+        // );
+
+        if (canvasToLoad) {
+          //if theres already a clip in the array
+          if (clipGroupState._objects.includes(circClip)) {
+            // console.log("bruh");
+
+            toMove =
+              clipGroupState._objects[
+                clipGroupState._objects.indexOf(circClip)
+              ];
+          }
+        }
+
+        //5/10 3:37pm - the circClip and its location are all correct,
+        //but the fog clip path isnt updated in the dialog canvas
+        //so there must be an issue related to the fogclip
+        toMove.set({ left: localCenter.x, top: localCenter.y });
+        toMove.setCoords();
         img.set({ dirty: true });
+
+        canvas.renderAll();
       });
 
-      console.log(fogState);
-
-      console.log(fogState.clipPath);
+      img.on("mousedown", (e) => {
+        console.log(canvas);
+        console.log(canvasToLoad);
+      });
 
       console.log(clipGroupState);
 
       clipGroupState.addWithUpdate(circClip);
+
       canvas.add(img);
-      //canvas.renderAll();
+      canvas.renderAll();
       canvas.setActiveObject(img);
     });
   };
 
   //TODO: 4/24: render control components into
   // side bar when in dialog canvas
+
   if (dialog) {
     return (
       <div className="canvas-wrapper">
@@ -362,7 +426,15 @@ const PaintCanvas = ({
           <ChampBar handleClick={handleClick} />
         </div>
         <canvas id={id} className="paint-canvas" ref={canvasRef}>
-          <img id="fog" src={fog_of_war} ref={fogRef} />
+          <img
+            id="fog"
+            src={fog_of_war}
+            ref={(element) => {
+              console.log(fogRef);
+
+              fogRef.current = element;
+            }}
+          />
           <img id="imag" src={IN_GAME_MINIMAP} ref={imageRef} />
         </canvas>
         <div className="canvas-controls">
@@ -384,7 +456,14 @@ const PaintCanvas = ({
           <CanvasButtonBar canvas={canvas} />
         </div>
         <canvas id={id} className="paint-canvas" ref={canvasRef}>
-          <img id="fog" src={fog_of_war} ref={fogRef} />
+          <img
+            id="fog"
+            src={fog_of_war}
+            ref={(element) => {
+              console.log(fogRef);
+              fogRef.current = element;
+            }}
+          />
           <img id="imag" src={IN_GAME_MINIMAP} ref={imageRef} />
         </canvas>
       </div>

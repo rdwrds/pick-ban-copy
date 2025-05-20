@@ -6,8 +6,11 @@ import {
   Sidebar,
   PaintCanvas,
   CanvasDialog,
+  Notes,
 } from "./components";
 import PickProvider, { PickContext } from "./components/PickProvider.jsx";
+import Title from "./components/Title/Title.jsx";
+import Navbar from "./components/Navbar/Navbar.jsx";
 
 export const CanvasContext = createContext(null);
 
@@ -79,11 +82,14 @@ function App() {
       </section>
     );
   };
+  console.log(toLoad);
 
   return (
     <CanvasContext.Provider value={{ canvas, setCanvas }}>
+      <Navbar />
+      <Title />
       <main className="app">
-        <button
+        {/* {        <button
           type="button"
           onClick={() => {
             setToLoad(
@@ -95,6 +101,7 @@ function App() {
                 "lockRotation",
                 "lockScalingX",
                 "lockScalingY",
+                "__eventListeners",
               ])
             );
 
@@ -102,15 +109,16 @@ function App() {
 
             setDialogOpen(!dialogOpen);
           }}
-        ></button>
-        {dialogOpen && (
+        ></button>} */}
+        {/* {dialogOpen && (
           <CanvasDialog
             dialogOpen={dialogOpen}
             setDialogOpen={setDialogOpen}
             //a weeee bit of prop drilling :3
             canvasToLoad={toLoad}
           />
-        )}
+        )} */}
+        <Notes />
         <Team team={"blue"} />
         <section className="champ-select">
           {champs

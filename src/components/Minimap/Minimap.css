@@ -1,6 +1,6 @@
 .minimap {
   position: absolute;
-  bottom: 0;
+  top: 80px;
   height: 360px;
   width: 360px;
   object-fit: cover;
@@ -38,7 +38,8 @@
 .minimap-icons {
   position: relative;
   height: 180px;
-  margin: 12px 0px;
+  margin: 2px 0px;
+  border-radius: 4px;
 }
 
 .minimap-champ-icon {

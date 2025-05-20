@@ -1,0 +1,34 @@
+.navbar-container {
+  color: white;
+  height: 50px;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  //justify-content: space-between;
+  background-color: #303030;
+}
+
+.navbar-button {
+  margin: auto;
+  padding: 8px;
+  border-radius: 2px;
+  background-color: #222222;
+}
+
+.home {
+  position: absolute;
+  left: 20px;
+}
+
+.about {
+  position: absolute;
+  right: 20px;
+}
+
+.title {
+  background-color: rgba(0, 0, 0, 0);
+  font-size: 24px;
+  font-weight: 600;
+  color: #acacac;
+  margin: auto;
+}

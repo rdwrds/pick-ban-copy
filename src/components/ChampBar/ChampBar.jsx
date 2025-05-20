@@ -29,7 +29,7 @@ const ChampBar = ({ handleClick }) => {
 
   return (
     <div className="icon-container">
-      <div className="minimap-icons">
+      <div className="minimap-icons blue-side">
         {state.blueChamps.map((champ) => {
           //needs the global flag or its gg
 
@@ -60,7 +60,7 @@ const ChampBar = ({ handleClick }) => {
           );
         })}
       </div>
-      <div className="minimap-icons">
+      <div className="minimap-icons red-side">
         {state.redChamps.map((champ) => {
           //needs the global flag or its gg
 

@@ -1,6 +1,8 @@
 import PaintCanvas from "../PaintCanvas/PaintCanvas";
 
 const CanvasDialog = ({ dialogOpen, setDialogOpen, canvasToLoad }) => {
+  console.log(canvasToLoad);
+
   return (
     <dialog open={dialogOpen} className="canvas-dialog">
       <button

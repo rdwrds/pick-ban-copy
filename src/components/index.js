@@ -6,3 +6,4 @@ export { default as CanvasButtonBar } from "./CanvasButtonBar/CanvasButtonBar.js
 export { default as ImgBar } from "./ImgBar/ImgBar.jsx";
 export { default as ChampBar } from "./ChampBar/ChampBar.jsx";
 export { default as CanvasDialog } from "./CanvasDialog/CanvasDialog.jsx";
+export { default as Notes } from "./Notes/Notes.jsx";

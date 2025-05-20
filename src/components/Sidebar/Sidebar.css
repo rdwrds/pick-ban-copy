@@ -1,11 +1,13 @@
 .sidebar-container {
   position: absolute;
   box-sizing: border-box;
-  top: 0px;
-  right: 0px;
-  width: 400px;
-  height: 100%;
-  padding: 16px 0;
+  //top: 20%;
+  right: 25px;
+  width: 450px;
+  height: 500px;
+  //padding: 16px 0;
+  background-color: #333333;
+  border-radius: 12px;
 }
 
 .sidebar-content {
@@ -18,7 +20,4 @@ DOES affect distance*/
   align-items: center;
   height: 100%;
   width: 100%;
-  /* padding: 24px; */
-  outline: solid 1px red;
-  background-color: purple;
 }
